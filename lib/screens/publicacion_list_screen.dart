@@ -14,6 +14,7 @@ class PublicacionListScreen extends StatefulWidget {
 class _PublicacionListScreenState extends State<PublicacionListScreen> {
   List<dynamic> publicaciones = [];
   String token = '';
+  String autor = '';
 
   @override
   void initState() {
@@ -24,6 +25,7 @@ class _PublicacionListScreenState extends State<PublicacionListScreen> {
   Future<void> initData() async {
     final prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token') ?? '';
+    autor = prefs.getString('usuario') ?? '';
     await loadPublicaciones();
   }
 
@@ -167,6 +169,7 @@ class _PublicacionListScreenState extends State<PublicacionListScreen> {
                                     builder: (_) => PublicacionFormScreen(
                                       token: token,
                                       publicacion: p,
+                                      autor: autor,
                                     ),
                                   ),
                                 );
@@ -196,7 +199,7 @@ class _PublicacionListScreenState extends State<PublicacionListScreen> {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => PublicacionFormScreen(token: token),
+              builder: (_) => PublicacionFormScreen(token: token, autor: autor),
             ),
           );
           loadPublicaciones();

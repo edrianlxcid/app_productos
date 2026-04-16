@@ -15,31 +15,55 @@ class _LoginScreenState extends State<LoginScreen> {
   final userCtrl = TextEditingController();
   final passCtrl = TextEditingController();
   String error = '';
+  bool loading = false;
 
   Future<void> login() async {
-    final result = await ApiService.login(userCtrl.text, passCtrl.text);
+    if (userCtrl.text.isEmpty || passCtrl.text.isEmpty) {
+      setState(() => error = 'Ingresa usuario y contraseña');
+      return;
+    }
 
-    if (result['token'] != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', result['token']);
+    setState(() {
+      loading = true;
+      error = '';
+    });
 
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const PublicacionListScreen()),
-      );
-    } else if (result['message'] == 'Usuario no encontrado') {
-      if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => RegisterScreen(username: userCtrl.text),
-        ),
-      );
-    } else {
+    try {
+      final result = await ApiService.login(userCtrl.text, passCtrl.text);
+      print('Login result: $result');
+
+      if (result['token'] != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', result['token']);
+        await prefs.setString('usuario', result['usuario'] ?? userCtrl.text);
+
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PublicacionListScreen()),
+        );
+      } else if (result['message'] == 'Usuario no encontrado') {
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => RegisterScreen(username: userCtrl.text),
+          ),
+        );
+      } else {
+        setState(() {
+          error = result['message'] ?? 'Error en login';
+        });
+      }
+    } catch (e) {
+      print('Error login: $e');
       setState(() {
-        error = result['message'] ?? 'Error en login';
+        error = 'Error de conexión: $e';
       });
+    } finally {
+      if (mounted) {
+        setState(() => loading = false);
+      }
     }
   }
 
@@ -61,7 +85,12 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: const InputDecoration(labelText: 'Contraseña'),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(onPressed: login, child: const Text('Ingresar')),
+            ElevatedButton(
+              onPressed: loading ? null : login,
+              child: loading
+                  ? const CircularProgressIndicator()
+                  : const Text('Ingresar'),
+            ),
             TextButton(
               onPressed: () {
                 Navigator.push(

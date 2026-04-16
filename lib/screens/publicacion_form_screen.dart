@@ -4,11 +4,13 @@ import '../services/api_service.dart';
 class PublicacionFormScreen extends StatefulWidget {
   final String token;
   final dynamic publicacion;
+  final String autor;
 
   const PublicacionFormScreen({
     super.key,
     required this.token,
     this.publicacion,
+    required this.autor,
   });
 
   @override
@@ -19,6 +21,8 @@ class _PublicacionFormScreenState extends State<PublicacionFormScreen> {
   late TextEditingController tituloCtrl;
   late TextEditingController descripcionCtrl;
   late TextEditingController cuerpoCtrl;
+  bool loading = false;
+  String error = '';
 
   @override
   void initState() {
@@ -80,23 +84,43 @@ class _PublicacionFormScreenState extends State<PublicacionFormScreen> {
   DateTime _selectedDateTime = DateTime.now();
 
   Future<void> savePublicacion() async {
-    final fields = {
-      'titulo': tituloCtrl.text,
-      'descripcion': descripcionCtrl.text,
-      'cuerpo': cuerpoCtrl.text,
-      'fecha_creacion': _selectedDateTime.toIso8601String(),
-    };
-
-    final id =
-        widget.publicacion?['_id']?['\$oid'] ?? widget.publicacion?['_id'];
-
-    if (id == null) {
-      await ApiService.createPublicacion(widget.token, fields);
-    } else {
-      await ApiService.updatePublicacion(widget.token, id, fields);
+    if (tituloCtrl.text.isEmpty) {
+      setState(() => error = 'Título es requerido');
+      return;
     }
 
-    if (mounted) Navigator.pop(context);
+    setState(() {
+      loading = true;
+      error = '';
+    });
+
+    try {
+      final fields = {
+        'autor': widget.autor,
+        'titulo': tituloCtrl.text,
+        'descripcion': descripcionCtrl.text,
+        'cuerpo': cuerpoCtrl.text,
+        'fecha_creacion': _selectedDateTime.toIso8601String(),
+      };
+
+      final id =
+          widget.publicacion?['_id']?['\$oid'] ?? widget.publicacion?['_id'];
+
+      print('Saving publicacion, id: $id, fields: $fields');
+
+      if (id == null) {
+        await ApiService.createPublicacion(widget.token, fields);
+      } else {
+        await ApiService.updatePublicacion(widget.token, id, fields);
+      }
+
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      print('Error saving: $e');
+      setState(() => error = 'Error: $e');
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
   }
 
   @override
@@ -143,9 +167,13 @@ class _PublicacionFormScreenState extends State<PublicacionFormScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: savePublicacion,
-              child: const Text('Guardar'),
+              onPressed: loading ? null : savePublicacion,
+              child: loading
+                  ? const CircularProgressIndicator()
+                  : const Text('Guardar'),
             ),
+            if (error.isNotEmpty)
+              Text(error, style: const TextStyle(color: Colors.red)),
           ],
         ),
       ),

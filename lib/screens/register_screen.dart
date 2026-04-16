@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -29,6 +30,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     if (result['token'] != null && mounted) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', result['token']);
+      await prefs.setString('usuario', userCtrl.text);
       Navigator.pop(context);
     }
   }
