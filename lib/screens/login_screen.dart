@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import 'register_screen.dart';
-import 'product_list_screen.dart';
+import 'publicacion_list_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const ProductListScreen()),
+        MaterialPageRoute(builder: (_) => const PublicacionListScreen()),
       );
     } else if (result['message'] == 'Usuario no encontrado') {
       if (!mounted) return;

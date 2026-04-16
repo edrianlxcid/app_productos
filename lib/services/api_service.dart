@@ -30,57 +30,62 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
-  static Future<List<dynamic>> getProducts(String token) async {
+  static Future<List<dynamic>> getPublicaciones(String token) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/products'),
+      Uri.parse('$baseUrl/publicaciones'),
       headers: {'Authorization': 'Bearer $token'},
     );
     return jsonDecode(response.body);
   }
 
-  static Future<void> createProduct(
+  static Future<void> createPublicacion(
     String token,
     Map<String, String> fields,
-    File? image,
   ) async {
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('$baseUrl/products'),
+      Uri.parse('$baseUrl/publicaciones'),
     );
     request.headers['Authorization'] = 'Bearer $token';
     request.fields.addAll(fields);
 
-    if (image != null) {
-      request.files.add(await http.MultipartFile.fromPath('image', image.path));
-    }
-
     await request.send();
   }
 
-  static Future<void> updateProduct(
+  static Future<void> updatePublicacion(
     String token,
     String id,
     Map<String, String> fields,
-    File? image,
   ) async {
     final request = http.MultipartRequest(
       'PUT',
-      Uri.parse('$baseUrl/products/$id'),
+      Uri.parse('$baseUrl/publicaciones/$id'),
     );
     request.headers['Authorization'] = 'Bearer $token';
     request.fields.addAll(fields);
 
-    if (image != null) {
-      request.files.add(await http.MultipartFile.fromPath('image', image.path));
-    }
-
     await request.send();
   }
 
-  static Future<void> deleteProduct(String token, String id) async {
+  static Future<void> deletePublicacion(String token, String id) async {
     await http.delete(
-      Uri.parse('$baseUrl/products/$id'),
+      Uri.parse('$baseUrl/publicaciones/$id'),
       headers: {'Authorization': 'Bearer $token'},
     );
+  }
+
+  static Future<void> addComentario(
+    String token,
+    String publicacionId,
+    Map<String, String> fields,
+  ) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/publicaciones/$publicacionId/comentarios'),
+    );
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields.addAll(fields);
+
+    await request.send();
   }
 }
