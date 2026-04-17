@@ -37,10 +37,15 @@ class _PublicacionListScreenState extends State<PublicacionListScreen> {
   }
 
   DateTime parseDate(dynamic dateValue) {
-    if (dateValue is Map && dateValue.containsKey('\$date')) {
-      return DateTime.parse(dateValue['\$date']);
-    } else if (dateValue is String) {
-      return DateTime.tryParse(dateValue) ?? DateTime.now();
+    try {
+      if (dateValue == null) return DateTime.now();
+      if (dateValue is Map && dateValue.containsKey('\$date')) {
+        return DateTime.parse(dateValue['\$date']);
+      } else if (dateValue is String) {
+        return DateTime.tryParse(dateValue) ?? DateTime.now();
+      }
+    } catch (e) {
+      print('parseDate error: $e');
     }
     return DateTime.now();
   }
@@ -74,14 +79,18 @@ class _PublicacionListScreenState extends State<PublicacionListScreen> {
         child: ListView.builder(
           itemCount: publicaciones.length,
           itemBuilder: (context, index) {
-            final p = publicaciones[index];
-            final id = p['_id']?['\$oid'] ?? p['_id'];
-            final titulo = p['titulo'] ?? '';
-            final descripcion = p['descripcion'] ?? '';
-            final cuerpo = p['cuerpo'] ?? '';
-            final autor = p['autor'] ?? '';
+            final p = publicaciones[index] is Map ? publicaciones[index] : {};
+            final id = p['_id'] is Map
+                ? p['_id']['\$oid']
+                : p['_id'].toString();
+            final titulo = p['titulo']?.toString() ?? '';
+            final descripcion = p['descripcion']?.toString() ?? '';
+            final cuerpo = p['cuerpo']?.toString() ?? '';
+            final autor = p['autor']?.toString() ?? '';
             final fechaCreacion = parseDate(p['fecha_creacion']);
-            final comentarios = p['comentarios'] as List<dynamic>? ?? [];
+            final comentarios = p['comentarios'] is List
+                ? p['comentarios']
+                : <dynamic>[];
 
             return Card(
               margin: const EdgeInsets.all(8),
@@ -127,11 +136,14 @@ class _PublicacionListScreenState extends State<PublicacionListScreen> {
                             style: TextStyle(fontStyle: FontStyle.italic),
                           )
                         else
-                          ...comentarios.map((c) {
+                          ...comentarios.map<Widget>((c) {
+                            final comment = c is Map ? c : {};
                             final comentarioAutor =
-                                c['autor'] ?? c['auter'] ?? 'Unknown';
-                            final texto = c['texto'] ?? '';
-                            final fecha = parseDate(c['fecha']);
+                                comment['autor']?.toString() ??
+                                comment['auter']?.toString() ??
+                                'Unknown';
+                            final texto = comment['texto']?.toString() ?? '';
+                            final fecha = parseDate(comment['fecha']);
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: Container(
