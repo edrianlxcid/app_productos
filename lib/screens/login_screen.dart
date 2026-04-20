@@ -70,40 +70,101 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: userCtrl,
-              decoration: const InputDecoration(labelText: 'Usuario'),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Card(
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-            TextField(
-              controller: passCtrl,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Contraseña'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: loading ? null : login,
-              child: loading
-                  ? const CircularProgressIndicator()
-                  : const Text('Ingresar'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => RegisterScreen(username: userCtrl.text),
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/Logo-ITQ_Mesa-de-trabajo-1-300x300.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.contain,
                   ),
-                );
-              },
-              child: const Text('No tengo usuario, registrar'),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'ITQ SocialMedia',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Inicia sesión para continuar',
+                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                  ),
+                  const SizedBox(height: 32),
+                  TextField(
+                    controller: userCtrl,
+                    decoration: InputDecoration(
+                      labelText: 'Usuario',
+                      prefixIcon: const Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: passCtrl,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Contraseña',
+                      prefixIcon: const Icon(Icons.lock),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: loading ? null : login,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: loading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Ingresar',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(error, style: const TextStyle(color: Colors.red)),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              RegisterScreen(username: userCtrl.text),
+                        ),
+                      );
+                    },
+                    child: const Text('No tengo usuario, registrar'),
+                  ),
+                ],
+              ),
             ),
-            Text(error, style: const TextStyle(color: Colors.red)),
-          ],
+          ),
         ),
       ),
     );

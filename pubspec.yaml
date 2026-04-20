@@ -1,5 +1,5 @@
-name: app_productos
-description: "Manejo de Productos"
+name: itq_social_media
+description: "ITQ Social Media - Red social del Instituto"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
@@ -24,3 +24,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/

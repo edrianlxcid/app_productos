@@ -12,9 +12,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Publicaciones',
+      title: 'ITQ Social Media',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.blue, useMaterial3: true),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFD32F2F),
+          primary: const Color(0xFFD32F2F),
+          secondary: Colors.black,
+          surface: Colors.white,
+        ),
+        useMaterial3: true,
+        scaffoldBackgroundColor: Colors.white,
+      ),
       home: const LoginScreen(),
     );
   }
